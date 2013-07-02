@@ -154,6 +154,7 @@ This is a test function which finds needless used modules from modules that are 
 This is a test function which finds needless used modules from specified source code.
 This function requires an argument which is the path to source file.
 
+=back
 
 =head1 DEPENDENCIES
 

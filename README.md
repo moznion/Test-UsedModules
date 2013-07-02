@@ -43,40 +43,38 @@ Test::UsedModules finds needless modules which are being used in your module to 
     This is a test function which finds needless used modules from specified source code.
     This function requires an argument which is the path to source file.
 
+# DEPENDENCIES
 
-
-    # DEPENDENCIES
-
-    - PPI (version 1.215 or later)
-    - Test::Builder::Module (version 0.98 or later)
-
-
-
-    # INCOMPATIBILITIES
-
-    None reported.
+- PPI (version 1.215 or later)
+- Test::Builder::Module (version 0.98 or later)
 
 
 
-    # BUGS AND LIMITATIONS
+# INCOMPATIBILITIES
 
-    No bugs have been reported.
-
-    Please report any bugs or feature requests to
-    `bug-test-usedmodules@rt.cpan.org`, or through the web interface at
-    [http://rt.cpan.org](http://rt.cpan.org).
+None reported.
 
 
 
-    # LICENSE
+# BUGS AND LIMITATIONS
 
-    Copyright (C) moznion.
+No bugs have been reported.
 
-    This library is free software; you can redistribute it and/or modify
-    it under the same terms as Perl itself.
+Please report any bugs or feature requests to
+`bug-test-usedmodules@rt.cpan.org`, or through the web interface at
+[http://rt.cpan.org](http://rt.cpan.org).
 
 
 
-    # AUTHOR
+# LICENSE
 
-    moznion <moznion@gmail.com>
+Copyright (C) moznion.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+
+
+# AUTHOR
+
+moznion <moznion@gmail.com>
