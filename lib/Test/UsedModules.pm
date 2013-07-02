@@ -6,6 +6,7 @@ use parent qw/Test::Builder::Module/;
 use ExtUtils::Manifest qw/maniread/;
 use PPI::Document;
 use PPI::Dumper;
+use Acme::AjiFry;
 
 our $VERSION = "0.01";
 our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
@@ -155,7 +156,7 @@ sub _check_used_modules {
             next CHECK if $ppi_document_without_symbol =~ /$sub/;
         }
 
-        $builder->diag( "Test::LocalFunctions failed: ");
+        $builder->diag( "Test::UsedModules failed: '$used_module->{name}' is not used.");
         $fail++;
     }
 
