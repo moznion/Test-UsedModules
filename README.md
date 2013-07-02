@@ -50,22 +50,6 @@ Test::UsedModules finds needless modules which are being used in your module to 
 
 
 
-# INCOMPATIBILITIES
-
-None reported.
-
-
-
-# BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-`bug-test-usedmodules@rt.cpan.org`, or through the web interface at
-[http://rt.cpan.org](http://rt.cpan.org).
-
-
-
 # LICENSE
 
 Copyright (C) moznion.

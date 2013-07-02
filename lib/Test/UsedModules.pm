@@ -167,20 +167,6 @@ This function requires an argument which is the path to source file.
 =back
 
 
-=head1 INCOMPATIBILITIES
-
-None reported.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-test-usedmodules@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
 =head1 LICENSE
 
 Copyright (C) moznion.
