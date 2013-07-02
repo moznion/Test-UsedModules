@@ -234,7 +234,7 @@ __END__
 
 =head1 NAME
 
-Test::UsedModules - It's new $module
+Test::UsedModules - Detects needless modules which are being used in your module
 
 =head1 SYNOPSIS
 
