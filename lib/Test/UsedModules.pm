@@ -53,8 +53,6 @@ use constant PRAGMAS => (
 );
 
 sub all_used_modules_ok {
-    my ($args) = @_;
-
     my $builder = __PACKAGE__->builder;
     my @lib_files = _list_modules_in_manifest($builder);
 
@@ -62,19 +60,19 @@ sub all_used_modules_ok {
 
     my $fail = 0;
     for my $file (@lib_files) {
-        _used_modules_ok( $builder, $file, $args ) or $fail++;
+        _used_modules_ok( $builder, $file ) or $fail++;
     }
 
     return $fail == 0;
 }
 
 sub used_modules_ok {
-    my ( $lib_file, $args ) = @_;
-    return _used_modules_ok( __PACKAGE__->builder, $lib_file, $args );
+    my ($lib_file) = @_;
+    return _used_modules_ok( __PACKAGE__->builder, $lib_file );
 }
 
 sub _used_modules_ok {
-    my ( $builder, $file, $args ) = @_;
+    my ( $builder, $file ) = @_;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
@@ -129,7 +127,6 @@ sub _fetch_modules_in_module {
 sub _check_used_modules {
     my ( $builder, $file ) = @_;
 
-    my $module       = _extract_module_name($file);
     my ($ppi_document, $ppi_document_without_symbol) = _generate_PPI_documents($file);
     my @used_modules = _fetch_modules_in_module($ppi_document);
 
@@ -158,6 +155,7 @@ sub _check_used_modules {
             next CHECK if $ppi_document_without_symbol =~ /$sub/;
         }
 
+        $builder->diag( "Test::LocalFunctions failed: ");
         $fail++;
     }
 
@@ -177,7 +175,7 @@ sub _fetch_imported_subs {
     no strict 'refs';
     %{'Test::UsedModules::Imported::Sandbox::'} = ();
     use strict;
-    eval "package Test::UsedModules::Imported::Sandbox;"
+    eval "package Test::UsedModules::Imported::Sandbox;" ## no critic
       . "$importer;"
       . "no strict 'refs';"
       . "%imported_refs = %{'Test::UsedModules::Imported::Sandbox::'};";
@@ -228,23 +226,6 @@ sub _list_modules_in_manifest {
     my @modules = grep { m!\Alib/.*\.pm\Z! } keys %{maniread()};
     return @modules;
 }
-
-sub _extract_module_name {
-    my ($file) = @_;
-
-    # e.g.
-    #   If file name is `lib/Foo/Bar.pm` then module name will be `Foo::Bar`.
-    if ( $file =~ /\.pm/ ) {
-        my $module = $file;
-        $module =~ s!\A.*\blib/!!;
-        $module =~ s!\.pm\Z!!;
-        $module =~ s!/+!::!g;
-        return $module;
-    }
-
-    return $file;
-}
-
 
 1;
 __END__
