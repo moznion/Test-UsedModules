@@ -1,6 +1,7 @@
 package Test::UsedModules::Constants;
 use strict;
 use warnings;
+use utf8;
 use parent 'Exporter';
 
 our @EXPORT = qw/PRAGMAS/;
