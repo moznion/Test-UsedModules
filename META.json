@@ -42,11 +42,16 @@
       },
       "runtime" : {
          "requires" : {
+            "PPI::Document" : "0",
+            "PPI::Dumper" : "0",
+            "Test::Builder::Module" : "0",
+            "parent" : "0",
             "perl" : "5.008005"
          }
       },
       "test" : {
          "requires" : {
+            "Test::Builder::Tester" : "0",
             "Test::More" : "0.98"
          }
       }
