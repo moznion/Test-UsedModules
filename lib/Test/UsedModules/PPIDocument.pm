@@ -93,5 +93,4 @@ sub _remove_unnecessary_tokens {
 
     return $document;
 }
-
 1;

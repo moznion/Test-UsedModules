@@ -47,6 +47,4 @@ use constant PRAGMAS => (
     'warnings',
     'warnings::register',
 );
-
-
 1;
