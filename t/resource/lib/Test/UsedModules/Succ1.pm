@@ -1,0 +1,26 @@
+package Test::UsedModules::Succ1;
+use strict;
+use warnings;
+use utf8;
+
+# Use forth imported function
+use Cwd;
+my $cwd = getcwd();
+
+# Use by not omit
+use File::Basename ();
+File::Basename::dirname('foo');
+
+# Use by imported function by specifying
+use File::Temp qw/tempdir/;
+tempdir();
+
+# Use as variable
+use FindBin;
+my $fb = $FindBin::Bin;
+
+# Require
+require File::Spec;
+File::Spec->catfile('foo');
+
+1;
