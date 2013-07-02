@@ -9,4 +9,4 @@ eval {
 };
 plan skip_all => "Test::Vars required for testing variables" if $@;
 
-all_vars_ok();
+Test::Vars::all_vars_ok();
