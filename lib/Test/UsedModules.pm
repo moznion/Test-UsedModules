@@ -12,7 +12,7 @@ our $VERSION = "0.01";
 our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
 
 sub all_used_modules_ok {
-    my $builder = __PACKAGE__->builder;
+    my $builder   = __PACKAGE__->builder;
     my @lib_files = _list_modules_in_manifest($builder);
 
     $builder->plan( tests => scalar @lib_files );
@@ -49,6 +49,43 @@ sub _used_modules_ok {
     die "fail forking: $!";
 }
 
+sub _check_used_modules {
+    my ( $builder, $file ) = @_;
+
+    my ( $ppi_document, $ppi_document_without_symbol ) = _generate_PPI_documents($file);
+    my @used_modules = _fetch_modules_in_module($ppi_document);
+
+    $ppi_document                = _remove_ppi_include_section($ppi_document);
+    $ppi_document_without_symbol = _remove_ppi_include_section($ppi_document_without_symbol);
+
+    my $fail = 0;
+    CHECK: for my $used_module (@used_modules) {
+        next if $ppi_document =~ /$used_module->{name}/;
+
+        my @imported_subs = _fetch_imported_subs($used_module);
+        for my $sub (@imported_subs) {
+            next CHECK if $ppi_document_without_symbol =~ /$sub/;
+        }
+
+        $builder->diag( "Test::UsedModules failed: '$used_module->{name}' is not used.");
+        $fail++;
+    }
+
+    return $fail;
+}
+
+sub _remove_ppi_include_section {
+    my ($ppi_document) = @_;
+    $ppi_document =~ s/
+        PPI::Statement::Include \n
+        \s*? PPI::Token::Word \s* \'(?:use|require)\' \s*? \n
+        \s*? PPI::Token::Word \s* .*? \n
+        (?:.*? \n)?
+        \s*? PPI::Token::Structure \s* \';\' \s*? \n
+    //gxm;
+    return $ppi_document;
+}
+
 sub _fetch_modules_in_module {
     my ($ppi_document) = @_;
 
@@ -83,44 +120,6 @@ sub _fetch_modules_in_module {
     return @used_modules;
 }
 
-sub _check_used_modules {
-    my ( $builder, $file ) = @_;
-
-    my ($ppi_document, $ppi_document_without_symbol) = _generate_PPI_documents($file);
-    my @used_modules = _fetch_modules_in_module($ppi_document);
-
-    # TODO
-    $ppi_document =~ s/
-        PPI::Statement::Include \n
-        \s*? PPI::Token::Word \s* \'(?:use|require)\' \s*? \n
-        \s*? PPI::Token::Word \s* .*? \n
-        (?:.*? \n)?
-        \s*? PPI::Token::Structure \s* \';\' \s*? \n
-    //gxm;
-    $ppi_document_without_symbol =~ s/
-        PPI::Statement::Include \n
-        \s*? PPI::Token::Word \s* \'(?:use|require)\' \s*? \n
-        \s*? PPI::Token::Word \s* .*? \n
-        (?:.*? \n)?
-        \s*? PPI::Token::Structure \s* \';\' \s*? \n
-    //gxm;
-
-    my $fail = 0;
-    CHECK: for my $used_module (@used_modules) {
-        next if $ppi_document =~ /$used_module->{name}/;
-
-        my @imported_subs = _fetch_imported_subs($used_module);
-        for my $sub (@imported_subs) {
-            next CHECK if $ppi_document_without_symbol =~ /$sub/;
-        }
-
-        $builder->diag( "Test::UsedModules failed: '$used_module->{name}' is not used.");
-        $fail++;
-    }
-
-    return $fail;
-}
-
 sub _fetch_imported_subs {
     my ($used_module) = @_;
 
@@ -134,20 +133,22 @@ sub _fetch_imported_subs {
     no strict 'refs';
     %{'Test::UsedModules::Imported::Sandbox::'} = ();
     use strict;
+
     eval "package Test::UsedModules::Imported::Sandbox;" ## no critic
       . "$importer;"
       . "no strict 'refs';"
       . "%imported_refs = %{'Test::UsedModules::Imported::Sandbox::'};";
-    delete $imported_refs{BEGIN};
 
+    delete $imported_refs{BEGIN};
     return keys %imported_refs;
 }
 
+# FIXME no!!!
 sub _generate_PPI_documents {
     my $file = shift;
 
-    my $reduced_document      = _remove_unnecessary_tokens(PPI::Document->new($file));
-    my $more_reduced_reduced  = _remove_unnecessary_tokens(PPI::Document->new($file), 'Symbol');
+    my $reduced_document     = _remove_unnecessary_tokens(PPI::Document->new($file));
+    my $more_reduced_reduced = _remove_unnecessary_tokens(PPI::Document->new($file), 'Symbol');
 
     return (
         PPI::Dumper->new($reduced_document)->string(),
@@ -182,7 +183,7 @@ sub _list_modules_in_manifest {
     if ( not -f $manifest ) {
         $builder->plan( skip_all => "$manifest doesn't exist" );
     }
-    my @modules = grep { m!\Alib/.*\.pm\Z! } keys %{maniread()};
+    my @modules = grep { m!\Alib/.*\.pm\Z! } keys %{ maniread() };
     return @modules;
 }
 
