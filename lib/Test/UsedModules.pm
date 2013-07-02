@@ -12,7 +12,7 @@ our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
 
 sub all_used_modules_ok {
     my $builder   = __PACKAGE__->builder;
-    my @lib_files = _list_modules_in_manifest($builder);
+    my @lib_files = _list_up_modules_from_manifest($builder);
 
     $builder->plan( tests => scalar @lib_files );
 
@@ -74,38 +74,38 @@ sub _check_used_modules {
 
 sub _fetch_imported_subs {
     my ($used_module) = @_;
+    my $importer = "$used_module->{type} $used_module->{name}";
 
-    my $importer = sprintf "%s %s", $used_module->{type}, $used_module->{name};
     if ( my $extend = $used_module->{extend} ) {
         $extend =~ s/\( \.\.\. \)/()/;
-        $importer = sprintf "%s %s", $importer, $extend;
+        $importer .= " $extend";
     }
 
     my %imported_refs;
     no strict 'refs';
-    %{'Test::UsedModules::Imported::Sandbox::'} = ();
+    %{'Test::UsedModules::Sandbox::'} = ();
     use strict;
 
-    eval "package Test::UsedModules::Imported::Sandbox;" ## no critic
-      . "$importer;"
-      . "no strict 'refs';"
-      . "%imported_refs = %{'Test::UsedModules::Imported::Sandbox::'};";
+    eval <<EOC; ## no critic
+package Test::UsedModules::Sandbox;
+$importer;
+no strict 'refs';
+%imported_refs = %{'Test::UsedModules::Sandbox::'};
+EOC
 
     delete $imported_refs{BEGIN};
     return keys %imported_refs;
 }
 
-sub _list_modules_in_manifest {
+sub _list_up_modules_from_manifest {
     my ($builder) = @_;
 
     my $manifest = $ExtUtils::Manifest::MANIFEST;
     if ( not -f $manifest ) {
         $builder->plan( skip_all => "$manifest doesn't exist" );
     }
-    my @modules = grep { m!\Alib/.*\.pm\Z! } keys %{ maniread() };
-    return @modules;
+    return grep { m!\Alib/.*\.pm\Z! } keys %{ maniread() };
 }
-
 1;
 __END__
 
