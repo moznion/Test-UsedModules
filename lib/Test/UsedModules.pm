@@ -5,9 +5,7 @@ use warnings;
 use utf8;
 use parent qw/Test::Builder::Module/;
 use ExtUtils::Manifest qw/maniread/;
-use PPI::Document;
-use PPI::Dumper;
-use Test::UsedModules::Constants;
+use Test::UsedModules::PPIDocument;
 
 our $VERSION = "0.01";
 our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
@@ -53,12 +51,10 @@ sub _used_modules_ok {
 sub _check_used_modules {
     my ( $builder, $file ) = @_;
 
-    my $ppi_document                = _generate_PPI_document($file);
-    my $ppi_document_without_symbol = _generate_PPI_document($file, 'Symbol');
-    my @used_modules = _fetch_modules_in_module($ppi_document);
+    my $ppi_document                = Test::UsedModules::PPIDocument::generate($file);
+    my $ppi_document_without_symbol = Test::UsedModules::PPIDocument::generate($file, 'Symbol');
 
-    $ppi_document                = _remove_ppi_include_section($ppi_document);
-    $ppi_document_without_symbol = _remove_ppi_include_section($ppi_document_without_symbol);
+    my @used_modules = Test::UsedModules::PPIDocument::fetch_modules_in_module($file);
 
     my $fail = 0;
     CHECK: for my $used_module (@used_modules) {
@@ -74,52 +70,6 @@ sub _check_used_modules {
     }
 
     return $fail;
-}
-
-sub _remove_ppi_include_section {
-    my ($ppi_document) = @_;
-    $ppi_document =~ s/
-        PPI::Statement::Include \n
-        \s*? PPI::Token::Word \s* \'(?:use|require)\' \s*? \n
-        \s*? PPI::Token::Word \s* .*? \n
-        (?:.*? \n)?
-        \s*? PPI::Token::Structure \s* \';\' \s*? \n
-    //gxm;
-    return $ppi_document;
-}
-
-sub _fetch_modules_in_module {
-    my ($ppi_document) = @_;
-
-    my @ppi_used_modules = $ppi_document =~ /
-        PPI::Statement::Include \n
-        (
-            \s*? PPI::Token::Word \s* \'(?:use|require)\' \s*? \n
-            \s*? PPI::Token::Word \s* .*? \n
-            (?:.*? \n)?
-        )
-        \s*? PPI::Token::Structure \s* \';\' \s*? \n
-    /gxm;
-
-    my @used_modules;
-    for my $ppi_used_module (@ppi_used_modules) {
-        my $used_module;
-        ( $used_module->{type}, $used_module->{name} ) = $ppi_used_module =~ /
-            \s*? PPI::Token::Word \s* \'(use|require)\' \n
-            \s*? PPI::Token::Word \s* \'(.*?)\' \n
-        /gxm;
-
-        # Reduce pragmas
-        next if grep { $_ eq $used_module->{name} } PRAGMAS;
-
-        ( $used_module->{extend} ) = $ppi_used_module =~ /
-            \s*? (?:PPI::Token::QuoteLike::Words|PPI::Structure::List) \s* \'?(.*?)\'? \n
-        /gxm;
-
-        push @used_modules, $used_module;
-    }
-
-    return @used_modules;
 }
 
 sub _fetch_imported_subs {
@@ -143,33 +93,6 @@ sub _fetch_imported_subs {
 
     delete $imported_refs{BEGIN};
     return keys %imported_refs;
-}
-
-sub _generate_PPI_document {
-    my ($file, $extra_remove_token) = shift;
-
-    my $document = _remove_unnecessary_tokens(PPI::Document->new($file), $extra_remove_token);
-    return PPI::Dumper->new($document)->string();
-}
-
-sub _remove_unnecessary_tokens {
-    my ( $document, $optional_token ) = @_;
-
-    my @surplus_tokens = (
-        'Operator',  'Number', 'Comment', 'Pod',
-        'BOM',       'Data',   'End',     'Prototype',
-        'Separator', 'Quote',  'Whitespace'
-    );
-
-    if ($optional_token) {
-        push @surplus_tokens, $optional_token;
-    }
-
-    foreach my $surplus_token (@surplus_tokens) {
-        $document->prune( 'PPI::Token::' . $surplus_token );
-    }
-
-    return $document;
 }
 
 sub _list_modules_in_manifest {
