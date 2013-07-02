@@ -1,6 +1,6 @@
 # NAME
 
-Test::UsedModules - It's new $module
+Test::UsedModules - Detects needless modules which are being used in your module
 
 # SYNOPSIS
 

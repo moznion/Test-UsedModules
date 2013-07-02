@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Detects needless modules which are being used in your module",
    "author" : [
       "moznion <moznion@gmail.com>"
    ],
@@ -60,5 +60,16 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/moznion/Test-UsedModules/issues"
+      },
+      "homepage" : "https://github.com/moznion/Test-UsedModules",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/moznion/Test-UsedModules.git",
+         "web" : "https://github.com/moznion/Test-UsedModules"
+      }
+   },
    "version" : "0.01"
 }
