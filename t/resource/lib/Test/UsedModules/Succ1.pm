@@ -12,8 +12,8 @@ use File::Basename ();
 File::Basename::dirname('foo');
 
 # Use by imported function by specifying
-use File::Temp qw/tempdir/;
-tempdir();
+use File::Spec::Functions qw/catdir/;
+catdir('foo');
 
 # Use as variable
 use FindBin;
@@ -21,6 +21,6 @@ my $fb = $FindBin::Bin;
 
 # Require
 require File::Spec;
-File::Spec->catfile('foo');
+File::Spec->catfile('bar');
 
 1;
