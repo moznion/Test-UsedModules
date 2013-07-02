@@ -6,52 +6,10 @@ use parent qw/Test::Builder::Module/;
 use ExtUtils::Manifest qw/maniread/;
 use PPI::Document;
 use PPI::Dumper;
-use Acme::AjiFry;
+use Test::UsedModules::Constants;
 
 our $VERSION = "0.01";
 our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
-
-use constant PRAGMAS => (
-    'attributes',
-    'autodie',
-    'autouse',
-    'base',
-    'bigint',
-    'bignum',
-    'bigrat',
-    'blib',
-    'bytes',
-    'charnames',
-    'constant',
-    'diagnostics',
-    'encoding',
-    'feature',
-    'fields',
-    'filetest',
-    'if',
-    'integer',
-    'less',
-    'lib',
-    'locale',
-    'mro',
-    'open',
-    'ops',
-    'overload',
-    'overloading',
-    'parent',
-    're',
-    'sigtrap',
-    'sort',
-    'strict',
-    'subs',
-    'threads',
-    'threads::shared',
-    'utf8',
-    'vars',
-    'vmsish',
-    'warnings',
-    'warnings::register',
-);
 
 sub all_used_modules_ok {
     my $builder = __PACKAGE__->builder;
