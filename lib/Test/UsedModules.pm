@@ -52,7 +52,8 @@ sub _used_modules_ok {
 sub _check_used_modules {
     my ( $builder, $file ) = @_;
 
-    my ( $ppi_document, $ppi_document_without_symbol ) = _generate_PPI_documents($file);
+    my $ppi_document                = _generate_PPI_document($file);
+    my $ppi_document_without_symbol = _generate_PPI_document($file, 'Symbol');
     my @used_modules = _fetch_modules_in_module($ppi_document);
 
     $ppi_document                = _remove_ppi_include_section($ppi_document);
@@ -143,17 +144,11 @@ sub _fetch_imported_subs {
     return keys %imported_refs;
 }
 
-# FIXME no!!!
-sub _generate_PPI_documents {
-    my $file = shift;
+sub _generate_PPI_document {
+    my ($file, $extra_remove_token) = shift;
 
-    my $reduced_document     = _remove_unnecessary_tokens(PPI::Document->new($file));
-    my $more_reduced_reduced = _remove_unnecessary_tokens(PPI::Document->new($file), 'Symbol');
-
-    return (
-        PPI::Dumper->new($reduced_document)->string(),
-        PPI::Dumper->new($more_reduced_reduced)->string()
-    );
+    my $document = _remove_unnecessary_tokens(PPI::Document->new($file), $extra_remove_token);
+    return PPI::Dumper->new($document)->string();
 }
 
 sub _remove_unnecessary_tokens {
