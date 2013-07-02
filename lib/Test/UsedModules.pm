@@ -115,13 +115,70 @@ __END__
 
 Test::UsedModules - Detects needless modules which are being used in your module
 
+
+=head1 VERSION
+
+This document describes Test::UsedModules version 0.01
+
+
 =head1 SYNOPSIS
 
+    # check all of modules that are listed in MANIFEST
+    use Test::More;
     use Test::UsedModules;
+    all_used_modules_ok();
+    done_testing;
+
+    # you can also specify individual file
+    use Test::More;
+    use Test::UsedModules;
+    used_modules_ok('/path/to/your/module_or_script');
+    done_testing;
+
 
 =head1 DESCRIPTION
 
-Test::UsedModules is ...
+Test::UsedModules finds needless modules which are being used in your module to clean up the source code.
+
+
+=head1 METHODS
+
+=over 4
+
+=item * all_used_modules_ok
+
+This is a test function which finds needless used modules from modules that are listed in MANIFEST file.
+
+=item * used_modules_ok
+
+This is a test function which finds needless used modules from specified source code.
+This function requires an argument which is the path to source file.
+
+
+=head1 DEPENDENCIES
+
+=over 4
+
+=item * PPI (version 1.215 or later)
+
+=item * Test::Builder::Module (version 0.98 or later)
+
+=back
+
+
+=head1 INCOMPATIBILITIES
+
+None reported.
+
+
+=head1 BUGS AND LIMITATIONS
+
+No bugs have been reported.
+
+Please report any bugs or feature requests to
+C<bug-test-usedmodules@rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org>.
+
 
 =head1 LICENSE
 
@@ -130,9 +187,9 @@ Copyright (C) moznion.
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
+
 =head1 AUTHOR
 
 moznion E<lt>moznion@gmail.comE<gt>
 
 =cut
-
