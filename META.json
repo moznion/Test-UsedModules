@@ -35,9 +35,12 @@
       "develop" : {
          "requires" : {
             "Test::CPAN::Meta" : "0",
+            "Test::LocalFunctions" : "0",
             "Test::MinimumVersion" : "0.10108",
+            "Test::Perl::Critic" : "0",
             "Test::Pod" : "1.41",
-            "Test::Spellunker" : "v0.2.7"
+            "Test::Spellunker" : "v0.2.7",
+            "Test::Vars" : "0"
          }
       },
       "runtime" : {
