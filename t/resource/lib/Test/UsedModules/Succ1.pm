@@ -19,6 +19,12 @@ catdir('foo');
 use FindBin;
 my $fb = $FindBin::Bin;
 
+# Use as quote
+use Encode;
+my $hash = +{
+    version => "$Encode::VERSION",
+};
+
 # Require
 require File::Spec;
 File::Spec->catfile('bar');

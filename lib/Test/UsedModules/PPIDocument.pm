@@ -78,9 +78,16 @@ sub _remove_unnecessary_tokens {
     my ( $document, $optional_token ) = @_;
 
     my @surplus_tokens = (
-        'Operator',  'Number', 'Comment', 'Pod',
-        'BOM',       'Data',   'End',     'Prototype',
-        'Separator', 'Quote',  'Whitespace'
+        'Operator',
+        'Number',
+        'Comment',
+        'Pod',
+        'BOM',
+        'Data',
+        'End',
+        'Prototype',
+        'Separator',
+        'Whitespace'
     );
 
     if ($optional_token) {
