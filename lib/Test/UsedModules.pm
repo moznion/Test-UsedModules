@@ -58,6 +58,7 @@ sub _check_used_modules {
 
     my $fail = 0;
     CHECK: for my $used_module (@used_modules) {
+        next if $used_module->{name} eq 'Exporter';
         next if $ppi_document =~ /$used_module->{name}/;
 
         my @imported_subs = _fetch_imported_subs($used_module);

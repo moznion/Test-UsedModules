@@ -29,4 +29,8 @@ my $hash = +{
 require File::Spec;
 File::Spec->catfile('bar');
 
+# XXX Exceptional!
+# Exporter should be ignored.
+use Exporter;
+
 1;
