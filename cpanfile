@@ -3,6 +3,7 @@ requires 'PPI::Dumper',           '1.215';
 requires 'Test::Builder::Module', '0.98';
 requires 'parent';
 requires 'perl', '5.008005';
+recommends => 'Compiler::Lexer';
 
 on configure => sub {
     requires 'CPAN::Meta';
