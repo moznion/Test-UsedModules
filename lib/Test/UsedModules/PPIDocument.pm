@@ -30,7 +30,9 @@ sub fetch_modules_in_module {
         next if grep { $_ eq $used_module->{name} } PRAGMAS;
 
         ( $used_module->{extend} ) = $ppi_used_module =~ /
-            \s*? (?:PPI::Token::QuoteLike::Words|PPI::Structure::List) \s* \'?(.*?)\'? \n
+            \s*? PPI::Token::Word \s* .*?
+            \s*? PPI::Token::Word \s* .*?
+            \s*? PPI::\S* \s* \'?(.*?)\'? \n
         /gxm;
 
         push @used_modules, $used_module;
