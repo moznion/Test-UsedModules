@@ -9,7 +9,7 @@ use Test::UsedModules;
 
 use Test::More;
 
-foreach my $lib (map{"t/resource/lib/Test/UsedModules/Succ$_.pm"} 1..1) {
+foreach my $lib (map{"t/resource/lib/Test/UsedModules/Succ$_.pm"} 1..9) {
     if ($lib =~ /Succ\d*.pm/) {
         require "Test/UsedModules/$&";
     }
