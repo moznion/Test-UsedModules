@@ -20,9 +20,9 @@ use FindBin;
 my $fb = $FindBin::Bin;
 
 # Use as quote
-use Encode;
+use B;
 my $hash = +{
-    version => "$Encode::VERSION",
+    version => "$B::VERSION",
 };
 
 # Require
