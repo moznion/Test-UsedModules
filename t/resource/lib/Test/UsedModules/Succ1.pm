@@ -11,9 +11,17 @@ my $cwd = getcwd();
 use File::Basename ();
 File::Basename::dirname('foo');
 
-# Use by imported function by specifying
+# Import as QuoteLike
 use File::Spec::Functions qw/catdir/;
 catdir('foo');
+
+# Import as single quote
+use File::Copy 'copy';
+copy('foo', 'bar');
+
+# Import as double quote
+use File::Path "make_path";
+make_path('foo', 'bar');
 
 # Use as variable
 use FindBin;
