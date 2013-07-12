@@ -6,7 +6,7 @@ Test::UsedModules - Detects needless modules which are being used in your module
 
 # VERSION
 
-This document describes Test::UsedModules version 0.02
+This document describes Test::UsedModules version 0.03
 
 
 

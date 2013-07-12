@@ -7,7 +7,7 @@ use parent qw/Test::Builder::Module/;
 use ExtUtils::Manifest qw/maniread/;
 use Test::UsedModules::PPIDocument;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
 
 sub all_used_modules_ok {
@@ -120,7 +120,7 @@ Test::UsedModules - Detects needless modules which are being used in your module
 
 =head1 VERSION
 
-This document describes Test::UsedModules version 0.02
+This document describes Test::UsedModules version 0.03
 
 
 =head1 SYNOPSIS
