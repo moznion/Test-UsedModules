@@ -141,6 +141,7 @@ This document describes Test::UsedModules version 0.02
 =head1 DESCRIPTION
 
 Test::UsedModules finds needless modules which are being used in your module to clean up the source code.
+Used modules (it means modules are used by 'use', 'require' or 'load (from Module::Load)' in target) will be checked by this module.
 
 
 =head1 METHODS
@@ -168,6 +169,27 @@ This function requires an argument which is the path to source file.
 
 =back
 
+=head1 KNOWN PROBLEMS
+
+=over 4
+
+=item * Cannot detects rightly when target module applies monkey patch.
+
+e.g. L<HTTP::Message::PSGI>
+
+It applies monkey patch to L<HTTP::Request> and L<HTTP::Response>.
+
+=item * Cannot detects when target module is used by `Module::Load::load` and module name is substituted in variable.
+
+e.g.
+
+    use Module::Load;
+    my $module = 'Foo::Bar';
+    load $module;
+
+in this case, Test::UsedModules will not notify even if Foo::Bar has never been used.
+
+=back
 
 =head1 LICENSE
 

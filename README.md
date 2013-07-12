@@ -29,6 +29,7 @@ This document describes Test::UsedModules version 0.02
 # DESCRIPTION
 
 Test::UsedModules finds needless modules which are being used in your module to clean up the source code.
+Used modules (it means modules are used by 'use', 'require' or 'load (from Module::Load)' in target) will be checked by this module.
 
 
 
@@ -48,7 +49,23 @@ Test::UsedModules finds needless modules which are being used in your module to 
 - PPI (version 1.215 or later)
 - Test::Builder::Module (version 0.98 or later)
 
+# KNOWN PROBLEMS
 
+- Cannot detects rightly when target module applies monkey patch.
+
+    e.g. [HTTP::Message::PSGI](http://search.cpan.org/perldoc?HTTP::Message::PSGI)
+
+    It applies monkey patch to [HTTP::Request](http://search.cpan.org/perldoc?HTTP::Request) and [HTTP::Response](http://search.cpan.org/perldoc?HTTP::Response).
+
+- Cannot detects when target module is used by \`Module::Load::load\` and module name is substituted in variable.
+
+    e.g.
+
+        use Module::Load;
+        my $module = 'Foo::Bar';
+        load $module;
+
+    in this case, Test::UsedModules will not notify even if Foo::Bar has never been used.
 
 # LICENSE
 
