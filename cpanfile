@@ -13,6 +13,7 @@ on configure => sub {
 on test => sub {
     requires 'Test::Builder::Tester', '1.22';
     requires 'Test::More',            '0.98';
+    requires 'Module::Load';
 };
 
 on develop => sub {

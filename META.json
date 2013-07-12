@@ -54,6 +54,7 @@
       },
       "test" : {
          "requires" : {
+            "Module::Load" : "0",
             "Test::Builder::Tester" : "1.22",
             "Test::More" : "0.98"
          }
