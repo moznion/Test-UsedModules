@@ -51,14 +51,15 @@ sub _used_modules_ok {
 sub _check_used_modules {
     my ( $builder, $file ) = @_;
 
-    my $ppi_document                = Test::UsedModules::PPIDocument::generate($file);
-    my $ppi_document_without_symbol = Test::UsedModules::PPIDocument::generate($file, 'Symbol');
+    my ($ppi_document, $load_removed) = Test::UsedModules::PPIDocument::generate($file);
+    my ($ppi_document_without_symbol) = Test::UsedModules::PPIDocument::generate($file, 'Symbol');
 
     my @used_modules = Test::UsedModules::PPIDocument::fetch_modules_in_module($file);
 
     my $fail = 0;
     CHECK: for my $used_module (@used_modules) {
         next if $used_module->{name} eq 'Exporter';
+        next if $used_module->{name} eq 'Module::Load' && $load_removed;
         next if $ppi_document =~ /$used_module->{name}/;
 
         my @imported_subs = _fetch_imported_subs($used_module);

@@ -22,7 +22,7 @@ sub fetch_modules_in_module {
     for my $ppi_used_module (@ppi_used_modules) {
         my $used_module;
         ( $used_module->{type}, $used_module->{name} ) = $ppi_used_module =~ /
-            \s*? PPI::Token::Word \s* \'(use|require)\' \n
+            \s*? PPI::Token::Word \s* \'(use|require|load)\' \n
             \s*? PPI::Token::Word \s* \'(.*?)\' \n
         /gxm;
 
@@ -54,6 +54,18 @@ sub _list_up_modules {
         \s*? PPI::Token::Structure \s* \';\' \s*? \n
     /gxm;
 
+    my @ppi_loaded_modules = $ppi_document =~ /
+        PPI::Statement \n
+        (
+            \s*? PPI::Token::Word \s* \'load\' \s*? \n
+            \s*? PPI::Token::Word \s* .*? \n
+            (?:.*? \n)?
+        )
+        \s*? PPI::Token::Structure \s* \';\' \s*? \n
+    /gxm;
+
+    push @ppi_used_modules, @ppi_loaded_modules;
+
     return @ppi_used_modules;
 }
 
@@ -73,7 +85,14 @@ sub _remove_include_sections {
         (?:.*? \n)?
         \s*? PPI::Token::Structure \s* \';\' \s*? \n
     //gxm;
-    return $ppi_document;
+    my $load_removed = $ppi_document =~ s/
+        PPI::Statement \n
+        \s*? PPI::Token::Word \s* \'load\' \s*? \n
+        \s*? PPI::Token::Word \s* .*? \n
+        (?:.*? \n)?
+        \s*? PPI::Token::Structure \s* \';\' \s*? \n
+    //gxm;
+    return ($ppi_document, $load_removed);
 }
 
 sub _remove_unnecessary_tokens {
