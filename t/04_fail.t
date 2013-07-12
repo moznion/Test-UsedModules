@@ -10,7 +10,8 @@ use Test::UsedModules;
 use Test::More;
 use Test::Builder::Tester;
 
-foreach my $lib (map{"t/resource/lib/Test/UsedModules/Fail$_.pm"} 1..6) {
+my @test_modules = glob "t/resource/lib/Test/UsedModules/Fail/*";
+foreach my $lib (@test_modules) {
     if ($lib =~ /Fail\d*.pm/) {
         require "Test/UsedModules/$&";
     }

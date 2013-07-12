@@ -1,4 +1,4 @@
-package Test::UsedModules::Fail2;
+package Test::UsedModules::Fail::2;
 use strict;
 use warnings;
 use utf8;
