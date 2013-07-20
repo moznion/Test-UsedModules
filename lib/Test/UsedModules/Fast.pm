@@ -119,6 +119,7 @@ sub _lexer {
     my $module_name = 0;
     my ($documents, $used_module, $used_modules);
 
+    my $load_called = 0;
     for my $token ( @{$lexer->tokenize($code)} ) {
         if ($top) {
             if ($token->{name} =~ /^(UseDecl|RequireDecl)$/) {
@@ -140,6 +141,7 @@ sub _lexer {
             } elsif ($token->{name} eq 'Key' && $token->{data} eq 'load') {
                 $used_module->{type} = 'load';
                 $module_name = 1;
+                $load_called = 1;
             } elsif ($token->{name} =~ /(NamespaceResolver|Namespace|UsedName)/ && $module_name) {
                 $used_module->{name} .= $token->{data};
             } elsif ($token->{name} eq 'SemiColon') {
@@ -170,6 +172,9 @@ sub _lexer {
         $top = $token->{name} eq 'SemiColon' ? 1 : 0;
     }
 
+    if ($load_called) {
+        @$used_modules = grep { $_->{name} ne 'Module::Load' } @$used_modules;
+    }
     return ($documents, $used_modules);
 }
 
