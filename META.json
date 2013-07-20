@@ -72,5 +72,8 @@
          "web" : "https://github.com/moznion/Test-UsedModules"
       }
    },
-   "version" : "0.03"
+   "version" : "0.03",
+   "x_contributors" : [
+      "papix <mail@papix.net>"
+   ]
 }
