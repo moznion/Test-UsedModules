@@ -120,7 +120,14 @@ sub _lexer {
     my ($documents, $used_module, $used_modules);
 
     for my $token ( @{$lexer->tokenize($code)} ) {
-        $module_decl = 1 if $token->{name} =~ /^(UseDecl|RequireDecl)$/ && $top;
+        if ($top) {
+            if ($token->{name} =~ /^(UseDecl|RequireDecl)$/) {
+                $module_decl = 1;
+            }
+            elsif ($token->{name} eq 'Key' && $token->{data} eq 'load') {
+                $module_decl = 1;
+            }
+        }
         $top = 0;
 
         if ($module_decl) {
@@ -129,6 +136,9 @@ sub _lexer {
                 $module_name = 1;
             } elsif ($token->{name} eq 'RequireDecl') {
                 $used_module->{type} = 'require';
+                $module_name = 1;
+            } elsif ($token->{name} eq 'Key' && $token->{data} eq 'load') {
+                $used_module->{type} = 'load';
                 $module_name = 1;
             } elsif ($token->{name} =~ /(NamespaceResolver|Namespace|UsedName)/ && $module_name) {
                 $used_module->{name} .= $token->{data};
