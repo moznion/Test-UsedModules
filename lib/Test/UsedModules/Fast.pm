@@ -159,7 +159,7 @@ sub _lexer {
                 undef $used_module;
                 $module_decl = 0;
             } else {
-                if ($token->{name} eq 'RawString') {
+                if ($token->{name} eq 'RawString' || $token->{name} eq 'String') {
                     $used_module->{extend} .= "'$token->{data}'";
                 } else {
                     $used_module->{extend} .= $token->{data};
