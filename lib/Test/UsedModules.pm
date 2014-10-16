@@ -10,6 +10,10 @@ use Test::UsedModules::PPIDocument;
 our $VERSION = "0.03";
 our @EXPORT  = qw/all_used_modules_ok used_modules_ok/;
 
+our $MODULES_WHITELIST ||= [
+    'Exporter',
+];
+
 sub all_used_modules_ok {
     my $builder   = __PACKAGE__->builder;
     my @lib_files = _list_up_modules_from_manifest($builder);
@@ -58,7 +62,23 @@ sub _check_used_modules {
 
     my $fail = 0;
     CHECK: for my $used_module (@used_modules) {
-        next if $used_module->{name} eq 'Exporter';
+        my $module_in_whitelist = 0;
+        for my $whitelist_item (@$MODULES_WHITELIST) {
+            if ( ref $whitelist_item eq 'Regexp' ) {
+                if ( $used_module->{name} =~ $whitelist_item ) {
+                    $module_in_whitelist = 1;
+                }
+
+                next;
+            }
+
+            if ( $used_module->{name} eq $whitelist_item ) {
+                $module_in_whitelist = 1;
+            }
+        }
+
+        next if $module_in_whitelist;
+
         next if $used_module->{name} eq 'Module::Load' && $load_removed;
         next if $ppi_document =~ /$used_module->{name}/;
 
@@ -143,6 +163,16 @@ This document describes Test::UsedModules version 0.03
 Test::UsedModules finds needless modules which are being used in your module to clean up the source code.
 Used modules (it means modules are used by 'use', 'require' or 'load (from Module::Load)' in target) will be checked by this module.
 
+=head1 CONFIGURATION
+
+=over 4
+
+=item * C<$MODULES_WHITELIST>
+
+Arrayref with the list of exceptions: module names or regular expressions matching module names that can be used without explicitly referring to any
+functionality provided by them. This may be used to suppress false positives. This setting only includes 'Exporter' by default.
+
+=back
 
 =head1 METHODS
 
