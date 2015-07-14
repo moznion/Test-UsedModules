@@ -7,7 +7,7 @@ use PPI::Dumper;
 use Test::UsedModules::Constants;
 
 sub new {
-    my (undef, $file) = @_;
+    my ($class, $file) = @_;
 
     my $document = PPI::Document->new($file);
     _remove_unnecessary_tokens($document);
@@ -25,7 +25,7 @@ sub new {
         ppi_document => $ppi_document,
         load_removed => $load_removed,
         ppi_document_without_symbol => $ppi_document_without_symbol,
-    };
+    }, $class;
 }
 
 sub _fetch_modules_in_module {
