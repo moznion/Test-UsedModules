@@ -55,13 +55,10 @@ sub _used_modules_ok {
 sub _check_used_modules {
     my ( $builder, $file ) = @_;
 
-    my ($ppi_document, $load_removed) = Test::UsedModules::PPIDocument::generate($file);
-    my ($ppi_document_without_symbol) = Test::UsedModules::PPIDocument::generate($file, 'Symbol');
-
-    my @used_modules = Test::UsedModules::PPIDocument::fetch_modules_in_module($file);
+    my $doc = Test::UsedModules::PPIDocument->new($file);
 
     my $fail = 0;
-    CHECK: for my $used_module (@used_modules) {
+    CHECK: for my $used_module (@{$doc->{used_modules}}) {
         my $module_in_whitelist = 0;
         for my $whitelist_item (@$MODULES_WHITELIST) {
             if ( ref $whitelist_item eq 'Regexp' ) {
@@ -79,12 +76,12 @@ sub _check_used_modules {
 
         next if $module_in_whitelist;
 
-        next if $used_module->{name} eq 'Module::Load' && $load_removed;
-        next if $ppi_document =~ /$used_module->{name}/;
+        next if $used_module->{name} eq 'Module::Load' && $doc->{load_removed};
+        next if $doc->{ppi_document} =~ /$used_module->{name}/;
 
         my @imported_subs = _fetch_imported_subs($used_module);
         for my $sub (@imported_subs) {
-            next CHECK if $ppi_document_without_symbol =~ /$sub/;
+            next CHECK if $doc->{ppi_document_without_symbol} =~ /$sub/;
         }
 
         $builder->diag( "Test::UsedModules failed: '$used_module->{name}' is not used.");
