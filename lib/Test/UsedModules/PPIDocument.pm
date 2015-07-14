@@ -6,16 +6,30 @@ use PPI::Document;
 use PPI::Dumper;
 use Test::UsedModules::Constants;
 
-sub generate {
-    my ($file, $extra_remove_token) = shift;
+sub new {
+    my (undef, $file) = @_;
 
-    my $document = _generate_with_include($file, $extra_remove_token);
-    return _remove_include_sections($document);
+    my $document = PPI::Document->new($file);
+    _remove_unnecessary_tokens($document);
+    my $document_str = PPI::Dumper->new($document)->string();
+    my ($ppi_document, $load_removed) = _remove_include_sections($document_str);
+
+    my @modules = _fetch_modules_in_module($document_str);
+
+    $document->prune('PPI::Symbol');
+    my ($ppi_document_without_symbol) = _remove_include_sections(PPI::Dumper->new($document)->string());
+
+    bless {
+        file => $file,
+        used_modules => \@modules,
+        ppi_document => $ppi_document,
+        load_removed => $load_removed,
+        ppi_document_without_symbol => $ppi_document_without_symbol,
+    };
 }
 
-sub fetch_modules_in_module {
-    my ($file) = @_;
-    my $ppi_document     = _generate_with_include($file);
+sub _fetch_modules_in_module {
+    my ($ppi_document) = @_;
     my @ppi_used_modules = _list_up_modules($ppi_document);
 
     my @used_modules;
@@ -69,13 +83,6 @@ sub _list_up_modules {
     return @ppi_used_modules;
 }
 
-sub _generate_with_include {
-    my ($file, $extra_remove_token) = shift;
-
-    my $document = _remove_unnecessary_tokens(PPI::Document->new($file), $extra_remove_token);
-    return PPI::Dumper->new($document)->string();
-}
-
 sub _remove_include_sections {
     my ($ppi_document) = @_;
     $ppi_document =~ s/
@@ -96,7 +103,7 @@ sub _remove_include_sections {
 }
 
 sub _remove_unnecessary_tokens {
-    my ( $document, $optional_token ) = @_;
+    my ( $document ) = @_;
 
     my @surplus_tokens = (
         'Operator',
@@ -110,10 +117,6 @@ sub _remove_unnecessary_tokens {
         'Separator',
         'Whitespace'
     );
-
-    if ($optional_token) {
-        push @surplus_tokens, $optional_token;
-    }
 
     foreach my $surplus_token (@surplus_tokens) {
         $document->prune( 'PPI::Token::' . $surplus_token );
